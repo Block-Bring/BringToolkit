@@ -65,11 +65,7 @@ class SettingsTab(QWidget):
 
         main_layout.addLayout(btn_row)
 
-    def _on_check_update(self):
+    @staticmethod
+    def _on_check_update():
         """点击“检查更新”按钮时调用"""
-        has_new = check_for_updates()
-
-        if has_new:
-            show_info("无可用更新", f"您的 {APP_NAME} 已是最新版本。")
-        else:
-            QMessageBox.information(self, "检查更新", "您已是最新版本！")
+        check_for_updates()

@@ -20,3 +20,6 @@ build/
 *.exe
 *.spec
 .idea/
+.gitignore
+.env
+token.txt
