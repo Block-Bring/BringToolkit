@@ -219,3 +219,13 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+.idea/
+.vscode/
+.git/
+build/
+dist/
+*.egg-info/ 
+.eggs/
+*.egg
+.ipynb_checkpoints
