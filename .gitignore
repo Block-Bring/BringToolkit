@@ -1,6 +1,9 @@
 # BringToolkit's latest information files
 latest/
 
+# Configuration files (user-specific)
+config.json
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
