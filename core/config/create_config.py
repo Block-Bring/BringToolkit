@@ -5,6 +5,7 @@
 import json
 import os
 from core.app_info import CONFIG_PATH
+from core.logger import logger
 
 
 def create_default_config(config_path=None):
@@ -30,11 +31,11 @@ def create_default_config(config_path=None):
     
     # 如果配置文件不存在，则创建
     if not os.path.exists(config_path):
-        print(f"配置文件不存在，正在创建: {config_path}")
+        logger.info(f"配置文件不存在，正在创建: {config_path}")  # type: ignore
         with open(config_path, 'w', encoding='utf-8') as f:
             json.dump(default_config, f, indent=4, ensure_ascii=False)  # type: ignore[arg-type]
-        print("默认配置文件创建成功")
+        logger.info("默认配置文件创建成功")  # type: ignore
     else:
-        print(f"配置文件已存在: {config_path}")
+        logger.info(f"配置文件已存在: {config_path}")  # type: ignore
     
     return config_path

@@ -5,6 +5,7 @@
 import json
 import os
 from core.app_info import CONFIG_PATH
+from core.logger import logger
 
 
 class ConfigManager:
@@ -33,9 +34,9 @@ class ConfigManager:
         try:
             with open(config_path, 'r', encoding='utf-8') as f:
                 self._config = json.load(f)
-            print(f"配置加载成功: {config_path}")
+            logger.info(f"配置加载成功: {config_path}")  # type: ignore
         except Exception as e:
-            print(f"配置加载失败: {e}，使用默认配置")
+            logger.error(f"配置加载失败: {e}，使用默认配置")  # type: ignore
             # 使用默认配置
             self._config = {
                 "minecraft_directory": "",
@@ -100,10 +101,10 @@ class ConfigManager:
         try:
             with open(config_path, 'w', encoding='utf-8') as f:
                 json.dump(self._config, f, indent=4, ensure_ascii=False)
-            print(f"配置已保存: {config_path}")
+            logger.info(f"配置已保存: {config_path}")  # type: ignore
             return True
         except Exception as e:
-            print(f"配置保存失败: {e}")
+            logger.error(f"配置保存失败: {e}")  # type: ignore
             return False
     
     def to_dict(self):

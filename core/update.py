@@ -6,6 +6,7 @@
 import requests
 from packaging import version
 from core.app_info import APP_VERSION, APP_NAME
+from core.logger import logger
 
 
 UPDATE_URL = (
@@ -31,8 +32,8 @@ def check_for_updates(insider_preview=False):
                 "is_stable": bool  # 是否为稳定版更新
             }
     """
-    print(f"正在检查更新... 当前版本：{APP_VERSION}")
-    print(f"检查类型：{'Insider Preview' if insider_preview else '稳定版'}")
+    logger.info(f"正在检查更新... 当前版本：{APP_VERSION}")
+    logger.info(f"检查类型：{'Insider Preview' if insider_preview else '稳定版'}")
 
     result = {
         "has_update": False,
@@ -47,43 +48,33 @@ def check_for_updates(insider_preview=False):
 
         if response.status_code != 200:
             error_msg = f"HTTP {response.status_code}"
-            print(f"检查更新失败：{error_msg}")
+            logger.error(f"检查更新失败：{error_msg}")
             result["error"] = error_msg
             return result
 
         data = response.json()
         
-        # 兼容新旧两种 JSON 格式
-        # 新格式：包含 "stable" 和 "insider_preview" 字段
-        # 旧格式：直接包含 "version" 和 "url" 字段
-        if "stable" in data or "insider_preview" in data:
-            # 新格式
-            if insider_preview:
-                update_info = data.get("insider_preview", {})
-                online_version = update_info.get("version", "")
-                url = update_info.get("url", "")
-                has_new = update_info.get("has_insider_preview", False)
-                result["is_stable"] = False
-            else:
-                update_info = data.get("stable", {})
-                online_version = update_info.get("version", "")
-                url = update_info.get("url", "")
-                has_new = update_info.get("has_stable", False)
-                result["is_stable"] = True
+        # 根据是否检查预览版，选择不同的分支
+        if insider_preview:
+            update_info = data.get("insider_preview", {})
+            online_version = update_info.get("version", "")
+            url = update_info.get("url", "")
+            has_new = update_info.get("has_insider_preview", False)
+            result["is_stable"] = False
         else:
-            # 旧格式（兼容）
-            online_version = data.get("version", "")
-            url = data.get("url", "")
-            has_new = bool(online_version)  # 如果有版本号就认为有新版本
+            update_info = data.get("stable", {})
+            online_version = update_info.get("version", "")
+            url = update_info.get("url", "")
+            has_new = update_info.get("has_stable", False)
             result["is_stable"] = True
-            print("警告：检测到旧版 JSON 格式，建议更新为新版格式")
 
-        # 如果没有新版本标记或版本号为空，直接返回
-        if not has_new or not online_version:
-            print("没有可用的新版本")
+        # 如果版本号为空，说明没有可用的版本信息
+        if not online_version:
+            logger.info("没有可用的版本信息")
             return result
 
-        print(f"线上版本：{online_version}")
+        logger.info(f"线上版本：{online_version}")
+        logger.debug(f"has_new 标记: {has_new}")
         result["online_version"] = online_version
         result["url"] = url
 
@@ -93,28 +84,28 @@ def check_for_updates(insider_preview=False):
             online_ver = version.parse(online_version)
             
             if online_ver > local_ver:
-                print("发现新版本！")
+                logger.info("发现新版本！")
                 result["has_update"] = True
             else:
-                print("已是最新版本。")
+                logger.info("已是最新版本。")
         except Exception as e:
             # 如果版本号解析失败，回退到简单字符串比较
-            print(f"版本号解析失败 ({e})，使用字符串比较")
+            logger.warning(f"版本号解析失败 ({e})，使用字符串比较")
             if online_version != APP_VERSION:
-                print("发现新版本！")
+                logger.info("发现新版本！")
                 result["has_update"] = True
             else:
-                print("已是最新版本。")
+                logger.info("已是最新版本。")
 
         return result
 
     except requests.exceptions.RequestException as e:
         error_msg = f"网络错误 - {e}"
-        print(f"检查更新失败：{error_msg}")
+        logger.error(f"检查更新失败：{error_msg}")
         result["error"] = error_msg
         return result
     except Exception as e:
         error_msg = f"未知错误 - {e}"
-        print(f"检查更新失败：{error_msg}")
+        logger.error(f"检查更新失败：{error_msg}")
         result["error"] = error_msg
         return result

@@ -2,7 +2,7 @@ from PyQt6.QtWidgets import (
     QWidget, QLabel, QVBoxLayout, QHBoxLayout, QPushButton
 )
 from PyQt6.QtCore import Qt
-from core.app_info import APP_NAME, APP_VERSION
+from core.app_info import APP_NAME, APP_VERSION_DISPLAY
 
 
 class HomeTab(QWidget):
@@ -27,7 +27,7 @@ class HomeTab(QWidget):
         layout.addWidget(subtitle)
         
         # ===== 版本号 =====
-        version = QLabel(f"版本 {APP_VERSION}")
+        version = QLabel(f"版本 {APP_VERSION_DISPLAY}")
         version.setStyleSheet("font-size: 12px;")
         version.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(version)
