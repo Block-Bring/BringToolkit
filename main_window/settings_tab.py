@@ -4,8 +4,19 @@ from PyQt6.QtWidgets import (
     QGroupBox, QCheckBox, QLabel, QPushButton
 )
 
-from ZJCore import *
+import webbrowser
+from core.app_info import APP_NAME
 from core.update import check_for_updates
+from ZJCore import ask_yes_no, show_info, show_error
+
+
+class UpdateWorker(QThread):
+    """后台线程执行更新检查，避免阻塞 UI"""
+    result_signal = pyqtSignal(dict)
+
+    def run(self):
+        result = check_for_updates()
+        self.result_signal.emit(result)  # type: ignore[attr-defined]
 
 
 class SettingsTab(QWidget):
@@ -19,7 +30,7 @@ class SettingsTab(QWidget):
         update_layout = QVBoxLayout() # 启动行为布局（垂直）
         group_update.setLayout(update_layout)
 
-        # 按钮布局（水平）：将“检查更新”按钮靠左放置
+        # 按钮布局（水平）：将"检查更新"按钮靠左放置
         chk_btn_layout = QHBoxLayout()
         self.check_update_btn = QPushButton("检查更新")
         self.check_update_btn.clicked.connect(self._on_check_update)  # type: ignore[attr-defined]
@@ -66,30 +77,22 @@ class SettingsTab(QWidget):
 
     def _on_check_update(self):
         """点击"检查更新"按钮时调用"""
-        # 定义一个内部类 UpdateWorker，继承自 QThread，用于在后台线程执行耗时操作，避免界面卡死
-        class UpdateWorker(QThread):
-            # 定义一个信号，用于将检查结果（字典类型）发送回主线程
-            result_signal = pyqtSignal(dict)
+        # 如果已有检查在运行，直接忽略
+        if hasattr(self, 'worker') and self.worker.isRunning():
+            return
 
-            # run 方法是在新线程中自动执行的入口函数
-            def run(self):
-                # 调用核心模块的检查更新函数，获取更新信息
-                result = check_for_updates()
-                # 通过信号将结果发射出去，通知主线程处理结果
-                self.result_signal.emit(result)
-
-        # 禁用“检查更新”按钮，防止用户重复点击
+        # 禁用"检查更新"按钮，防止用户重复点击
         self.check_update_btn.setEnabled(False)
         # 保存按钮当前的文本内容，以便检查结束后恢复
         original_text = self.check_update_btn.text()
-        # 将按钮文本修改为“正在检查...”，提示用户当前状态
+        # 将按钮文本修改为"正在检查..."，提示用户当前状态
         self.check_update_btn.setText("正在检查...")
 
         # 创建 UpdateWorker 的实例
         self.worker = UpdateWorker()
         # 连接信号与槽：当后台线程发出结果信号时，调用 _on_update_finished 方法处理结果
         # 使用 lambda 表达式捕获当前的 original_text，确保回调时能恢复正确的按钮文本
-        self.worker.result_signal.connect(lambda result: self._on_update_finished(result, original_text))
+        self.worker.result_signal.connect(lambda result: self._on_update_finished(result, original_text))  # type: ignore[attr-defined]
         # 启动后台线程，开始执行 run 方法中的检查更新逻辑
         self.worker.start()
 
@@ -110,8 +113,6 @@ class SettingsTab(QWidget):
         if has_update:
             question = ask_yes_no("发现新版本", f"当前所获取到的最新版本为 {online_version}\n是否更新？")
             if question and url:
-                import webbrowser
                 webbrowser.open(url)
         else:
-            from core.app_info import APP_NAME
             show_info("无可用更新", f"您的 {APP_NAME} 已是最新版本。")

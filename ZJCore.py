@@ -1,6 +1,6 @@
 """
-ZJCore - 简易对话框工具箱
-用来快速弹出中文按钮的对话框。
+ZJCore - 简化语法工具箱
+用来简化过于复杂的实现代码。
 """
 from PyQt6.QtWidgets import QMessageBox
 
