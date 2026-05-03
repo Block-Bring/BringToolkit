@@ -146,14 +146,24 @@ class UpdateDialog(QDialog):
         """更新进度"""
         self.progress_bar.setValue(percentage)
         
-        # 格式化文件大小
-        downloaded_mb = downloaded / (1024 * 1024)
-        total_mb = total / (1024 * 1024)
+        # 智能选择单位：根据文件大小自动切换 B/MB/GB
+        if total >= 1024 * 1024 * 1024:  # >= 1GB
+            unit = "GB"
+            divisor = 1024 * 1024 * 1024
+        elif total >= 1024 * 1024:  # >= 1MB
+            unit = "MB"
+            divisor = 1024 * 1024
+        else:  # < 1MB
+            unit = "B"
+            divisor = 1
+        
+        downloaded_display = downloaded / divisor
+        total_display = total / divisor
         
         self.progress_detail.setText(
-            f"{downloaded_mb:.2f} MB / {total_mb:.2f} MB ({percentage}%)"
+            f"{downloaded_display:.2f} {unit} / {total_display:.2f} {unit} ({percentage}%)"
         )
-    
+
     def download_finished(self, file_path):
         """下载完成"""
         self.downloaded_file = file_path
