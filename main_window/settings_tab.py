@@ -4,8 +4,9 @@ from PyQt6.QtWidgets import (
 )
 
 import webbrowser
-from core.app_info import APP_NAME
-from core.update import check_for_updates
+from core.app_info import APP_NAME, format_version_display
+from core.check_update import check_for_updates
+from core.updater import UpdateDialog
 from core.config import config, save_config
 from ZJCore import ask_yes_no, show_info, show_error, run_in_background
 
@@ -91,7 +92,7 @@ class SettingsTab(QWidget):
         # 禁用"检查更新"按钮，防止用户重复点击
         self.check_update_btn.setEnabled(False)
         original_text = self.check_update_btn.text()
-        self.check_update_btn.setText("正在检查...")
+        self.check_update_btn.setText("正在检查")
 
         # 根据配置决定是否检查预览版
         insider_preview = config.get("settings.insider_preview", False)
@@ -123,8 +124,11 @@ class SettingsTab(QWidget):
 
         if has_update:
             version_type = "稳定版" if is_stable else "预览版"
-            question = ask_yes_no("发现新版本", f"当前所获取到的最新版本为 {online_version}（{version_type}）\n是否更新？")
+            formatted_online_version = format_version_display(online_version)
+            question = ask_yes_no("发现新版本", f"当前所获取到的最新版本为 {formatted_online_version}（{version_type}）\n是否更新？")
             if question and url:
-                webbrowser.open(url)
+                # 显示更新对话框
+                update_dialog = UpdateDialog(formatted_online_version, url, self)
+                update_dialog.exec()
         else:
             show_info("无可用更新", f"您的 {APP_NAME} 已是最新版本。")

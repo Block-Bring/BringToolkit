@@ -1,5 +1,5 @@
 APP_NAME = "Bring Toolkit"
-APP_VERSION = "1.0.0a2"  # 内部版本号，用于比较和存储
+APP_VERSION = "1.0.0a1"  # 内部版本号，用于比较和存储
 CONFIG_PATH = "config.json"
 LATEST_LOG_PATH = "latest.log"  # 最新日志文件路径
 

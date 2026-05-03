@@ -12,9 +12,19 @@ a = Analysis(
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
-    excludes=[],
+    excludes=[
+        # 排除不必要的模块以减小体积
+        'tkinter',
+        'unittest',
+        'doctest',
+        'test',
+        'pydoc',
+        'distutils',
+        'setuptools',
+        'pkg_resources',
+    ],
     noarchive=False,
-    optimize=0,
+    optimize=2,  # 优化字节码
 )
 pyz = PYZ(a.pure)
 
@@ -27,7 +37,7 @@ exe = EXE(
     name='BringToolkit',
     debug=False,
     bootloader_ignore_signals=False,
-    strip=False,
+    strip=True,  # 移除符号表
     upx=True,
     upx_exclude=[],
     runtime_tmpdir=None,

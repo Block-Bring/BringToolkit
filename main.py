@@ -29,8 +29,17 @@ class MainWindow(QMainWindow):
         self.tabs = QTabWidget()
         self.setCentralWidget(self.tabs)
 
-        self.tabs.addTab(HomeTab(), "首页")
-        self.tabs.addTab(FuncTab(), "功能")
+        home_tab = HomeTab()
+        self.tabs.addTab(home_tab, "首页")
+        
+        # 连接“开始使用”按钮到功能页
+        home_tab.start_button.clicked.connect(lambda: self.tabs.setCurrentIndex(1))
+
+        func_tab = FuncTab()
+        scroll_func = QScrollArea()
+        scroll_func.setWidgetResizable(True)
+        scroll_func.setWidget(func_tab)
+        self.tabs.addTab(scroll_func, "功能")
 
         settings_tab = SettingsTab() # 设置分组
         scroll_settings = QScrollArea() # 滚动条
