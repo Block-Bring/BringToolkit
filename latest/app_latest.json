@@ -1,4 +1,12 @@
 {
-  "version": "1.0.0a1",
-  "url": "https://ghfast.top/https://github.com/Block-Bring/BringToolkit/releases/download/1.0.0a1/BringToolkit_v1.0.0a1_windows_amd64.exe"
+  "stable": {
+    "has_stable": false,
+    "version": "",
+    "url": ""
+  },
+  "insider_preview": {
+    "has_insider_preview": true,
+    "version": "1.0.0a1",
+    "url": "https://ghfast.top/https://github.com/Block-Bring/BringToolkit/releases/download/1.0.0a1/BringToolkit_v1.0.0a1_windows_amd64.exe"
+  }
 }

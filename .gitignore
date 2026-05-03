@@ -32,8 +32,8 @@ MANIFEST
 # PyInstaller
 #   Usually these files are written by a python script from a template
 #   before PyInstaller builds the exe, so as to inject date/other infos into it.
+#   Note: .spec files are typically kept in version control for reproducibility
 *.manifest
-*.spec
 
 # Installer logs
 pip-log.txt
@@ -220,12 +220,6 @@ __marimo__/
 # Streamlit
 .streamlit/secrets.toml
 
+# IDE and editor files (project-specific)
 .idea/
 .vscode/
-.git/
-build/
-dist/
-*.egg-info/ 
-.eggs/
-*.egg
-.ipynb_checkpoints

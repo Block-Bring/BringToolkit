@@ -1,4 +1,3 @@
-from PyQt6.QtCore import QThread, pyqtSignal
 from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout,
     QGroupBox, QCheckBox, QLabel, QPushButton
@@ -7,16 +6,9 @@ from PyQt6.QtWidgets import (
 import webbrowser
 from core.app_info import APP_NAME
 from core.update import check_for_updates
-from ZJCore import ask_yes_no, show_info, show_error
+from core.config import config, save_config
+from ZJCore import ask_yes_no, show_info, show_error, run_in_background
 
-
-class UpdateWorker(QThread):
-    """后台线程执行更新检查，避免阻塞 UI"""
-    result_signal = pyqtSignal(dict)
-
-    def run(self):
-        result = check_for_updates()
-        self.result_signal.emit(result)  # type: ignore[attr-defined]
 
 
 class SettingsTab(QWidget):
@@ -40,7 +32,8 @@ class SettingsTab(QWidget):
         update_layout.addLayout(chk_btn_layout)
 
         self.check_update_cb = QCheckBox("启动时检查更新")
-        self.check_update_cb.setChecked(True)
+        # 从配置中读取初始值
+        self.check_update_cb.setChecked(config.get("settings.check_update", True))
         update_layout.addWidget(self.check_update_cb)
 
         main_layout.addWidget(group_update)
@@ -51,7 +44,8 @@ class SettingsTab(QWidget):
         group_insider.setLayout(insider_layout)
 
         self.insider_cb = QCheckBox("加入 Insider Preview 计划")
-        self.insider_cb.setChecked(False)
+        # 从配置中读取初始值
+        self.insider_cb.setChecked(config.get("settings.insider_preview", False))
         insider_layout.addWidget(self.insider_cb)
 
         # 说明文字（灰色小字）
@@ -70,10 +64,23 @@ class SettingsTab(QWidget):
         btn_row = QHBoxLayout()
         btn_row.addStretch()   # 左弹簧，把按钮推到右边
         self.save_btn = QPushButton("保存设置")
+        self.save_btn.clicked.connect(self._on_save_settings)  # type: ignore[attr-defined]
         btn_row.addWidget(self.save_btn)
         # 这里不再需要右弹簧，因为左弹簧已经占满左边
 
         main_layout.addLayout(btn_row)
+
+    def _on_save_settings(self):
+        """点击"保存设置"按钮时调用"""
+        # 保存复选框的状态到配置
+        config.set("settings.check_update", self.check_update_cb.isChecked())
+        config.set("settings.insider_preview", self.insider_cb.isChecked())
+        
+        # 保存到文件
+        if save_config():
+            show_info("保存成功", "设置已保存")
+        else:
+            show_error("保存失败", "无法保存设置，请重试")
 
     def _on_check_update(self):
         """点击"检查更新"按钮时调用"""
@@ -83,17 +90,20 @@ class SettingsTab(QWidget):
 
         # 禁用"检查更新"按钮，防止用户重复点击
         self.check_update_btn.setEnabled(False)
-        # 保存按钮当前的文本内容，以便检查结束后恢复
         original_text = self.check_update_btn.text()
-        # 将按钮文本修改为"正在检查..."，提示用户当前状态
         self.check_update_btn.setText("正在检查...")
 
-        # 创建 UpdateWorker 的实例
-        self.worker = UpdateWorker()
-        # 连接信号与槽：当后台线程发出结果信号时，调用 _on_update_finished 方法处理结果
-        # 使用 lambda 表达式捕获当前的 original_text，确保回调时能恢复正确的按钮文本
-        self.worker.result_signal.connect(lambda result: self._on_update_finished(result, original_text))  # type: ignore[attr-defined]
-        # 启动后台线程，开始执行 run 方法中的检查更新逻辑
+        # 根据配置决定是否检查预览版
+        insider_preview = config.get("settings.insider_preview", False)
+        
+        # 使用 ZJCore 的 run_in_background 简化多线程代码
+        def task():
+            return check_for_updates(insider_preview=insider_preview)
+        
+        def on_finished(result):
+            self._on_update_finished(result, original_text)
+        
+        self.worker = run_in_background(task, on_finished=on_finished)
         self.worker.start()
 
     def _on_update_finished(self, result, original_text):
@@ -109,9 +119,11 @@ class SettingsTab(QWidget):
         has_update = result.get("has_update", False)
         online_version = result.get("online_version")
         url = result.get("url")
+        is_stable = result.get("is_stable", True)
 
         if has_update:
-            question = ask_yes_no("发现新版本", f"当前所获取到的最新版本为 {online_version}\n是否更新？")
+            version_type = "稳定版" if is_stable else "预览版"
+            question = ask_yes_no("发现新版本", f"当前所获取到的最新版本为 {online_version}（{version_type}）\n是否更新？")
             if question and url:
                 webbrowser.open(url)
         else:
