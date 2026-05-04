@@ -5,10 +5,12 @@ Minecraft 数据迁移窗口
 from PyQt6.QtWidgets import (
     QDialog, QVBoxLayout, QHBoxLayout, QLabel, 
     QPushButton, QLineEdit, QFileDialog, QComboBox,
-    QGroupBox, QMessageBox
+    QGroupBox
 )
 from PyQt6.QtCore import Qt
-from core.logger import logger
+
+from tools.logger import logger
+from tools.ZJTools import ask_yes_no, show_info, show_warning
 
 
 class MigratorWindow(QDialog):
@@ -180,35 +182,32 @@ class MigratorWindow(QDialog):
         
         # 验证输入
         if not source_dir:
-            QMessageBox.warning(self, "警告", "请先选择源目录！")
+            show_warning("警告", "请先选择源目录！")
             return
         
         if not source_instance:
-            QMessageBox.warning(self, "警告", "请选择源实例！")
+            show_warning("警告", "请选择源实例！")
             return
         
         if not target_instance:
-            QMessageBox.warning(self, "警告", "请选择目标实例！")
+            show_warning("警告", "请选择目标实例！")
             return
         
         # 确认对话框
-        reply = QMessageBox.question(
-            self,
+        reply = ask_yes_no(
             "确认迁移",
             f"确定要迁移数据吗？\n\n"
             f"源目录: {source_dir}\n"
             f"源实例: {source_instance}\n"
             f"目标实例: {target_instance}",
-            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
-            QMessageBox.StandardButton.No
+            default=False  # 默认选"否"，更安全
         )
         
-        if reply == QMessageBox.StandardButton.Yes:
+        if reply:
             logger.info(f"开始迁移: {source_instance} -> {target_instance}")
             
             # TODO: 实现实际的迁移逻辑
-            QMessageBox.information(
-                self,
+            show_info(
                 "迁移功能开发中",
                 "迁移功能正在开发中...\n\n"
                 "将会复制:\n"
@@ -218,6 +217,3 @@ class MigratorWindow(QDialog):
                 "• 截图\n"
                 "• 模组配置"
             )
-            
-            # 迁移成功后关闭窗口
-            # self.accept()

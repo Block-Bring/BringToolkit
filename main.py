@@ -12,19 +12,19 @@ import sys
 os.environ["QT_QPA_PLATFORM"] = "windows:fontengine=freetype"
 
 from PyQt6.QtWidgets import QApplication, QMainWindow, QTabWidget, QScrollArea
-from PyQt6.QtGui import QFont
+from PyQt6.QtGui import QFont, QIcon
 from core.app_info import APP_NAME
-from main_window.home_tab import HomeTab
-from main_window.func_tab import FuncTab
-from main_window.settings_tab import SettingsTab
-from main_window.about_tab import AboutTab
+from ui.home_tab import HomeTab
+from ui.func_tab import FuncTab
+from ui.settings_tab import SettingsTab
+from ui.about_tab import AboutTab
 
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle(APP_NAME)
-        self.resize(800, 500)
+        self.resize(700, 400)
 
         self.tabs = QTabWidget()
         self.setCentralWidget(self.tabs)
@@ -64,6 +64,7 @@ if __name__ == "__main__":
     
     # 🚀 准备发射... 3, 2, 1, 启动！
     window = MainWindow()
+    window.setWindowIcon(QIcon("resources/icon.ico"))
     window.show()
     
     # 🎯 程序的主循环开始运行，直到用户关闭窗口

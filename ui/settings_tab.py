@@ -7,7 +7,7 @@ from core.app_info import APP_NAME, format_version_display
 from core.check_update import check_for_updates
 from core.updater import UpdateDialog
 from core.config import config, save_config
-from core.ZJCore import ask_yes_no, show_info, show_error, run_in_background
+from tools.ZJTools import ask_yes_no, show_info, show_error, run_in_background
 
 
 

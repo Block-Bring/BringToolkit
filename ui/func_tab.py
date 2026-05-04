@@ -2,7 +2,6 @@ from PyQt6.QtWidgets import (
     QWidget, QLabel, QVBoxLayout, QHBoxLayout, QPushButton, QFrame
 )
 from PyQt6.QtCore import Qt
-from core.logger import logger
 
 
 class FuncTab(QWidget):

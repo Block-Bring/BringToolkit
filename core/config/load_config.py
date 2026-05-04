@@ -5,7 +5,7 @@
 import json
 import os
 from core.app_info import CONFIG_PATH
-from core.logger import logger
+from tools.logger import logger
 
 
 class ConfigManager:

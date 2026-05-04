@@ -5,8 +5,8 @@
 """
 import requests
 from packaging import version
-from core.app_info import APP_VERSION
-from tools.logger import logger
+from core.app_info import APP_VERSION, APP_NAME
+from core.logger import logger
 
 
 UPDATE_URL = (

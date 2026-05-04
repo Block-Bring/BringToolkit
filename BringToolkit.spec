@@ -7,6 +7,7 @@ a = Analysis(
     binaries=[],
     datas=[
         ('core/config', 'core/config'),
+        ('resources', 'resources'),  # 打包资源文件
     ],
     hiddenimports=[],
     hookspath=[],
