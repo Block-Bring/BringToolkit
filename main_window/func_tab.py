@@ -133,5 +133,8 @@ class FuncTab(QWidget):
     
     def _on_bring_craft_migrate(self):
         """Bring Craft 数据迁移按钮点击事件"""
-        # TODO: 实现迁移功能
-        logger.info("开始 Bring Craft 个性化数据迁移...")
+        from func.migrator.window import MigratorWindow
+        
+        # 创建并显示迁移窗口
+        dialog = MigratorWindow(self)
+        dialog.exec()
