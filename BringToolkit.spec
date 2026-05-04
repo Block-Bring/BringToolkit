@@ -7,7 +7,7 @@ a = Analysis(
     binaries=[],
     datas=[
         ('core/config', 'core/config'),
-        ('resources', 'resources'),  # 打包资源文件
+        ('resources', 'resources'),  # PyInstaller onefile: 打包到 _MEIPASS/resources/
     ],
     hiddenimports=[],
     hookspath=[],
