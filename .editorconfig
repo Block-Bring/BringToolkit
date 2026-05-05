@@ -1,0 +1,20 @@
+# EditorConfig is awesome: https://EditorConfig.org
+
+# 顶级配置文件
+root = true
+
+# 所有文件的默认设置
+[*]
+indent_style = space
+end_of_line = lf
+charset = utf-8
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+# JSON 文件使用 2 空格缩进
+[*.json]
+indent_size = 2
+
+# Python 文件使用 4 空格缩进
+[*.py]
+indent_size = 4

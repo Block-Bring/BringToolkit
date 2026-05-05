@@ -1,0 +1,42 @@
+{
+  "version": "1.10.0",
+  "description": "数据迁移配置文件 - 定义需要复制和删除的文件/目录",
+  "copies": [
+    {
+      "from": "options.txt",
+      "to": "options.txt",
+      "description": "游戏设置文件"
+    },
+    {
+      "from": "servers.dat",
+      "to": "servers.dat",
+      "description": "服务器列表"
+    },
+    {
+      "from": "xaero/",
+      "to": "xaero/",
+      "description": "Xaero 的小地图数据"
+    },
+    {
+      "from": "shaderpacks/",
+      "to": "shaderpacks/",
+      "description": "光影包文件夹"
+    },
+    {
+      "from": "tacz/",
+      "to": "tacz/",
+      "description": "Timeless and Classics Zero 模组配置"
+    },
+    {
+      "from": "config/",
+      "to": "config/",
+      "description": "模组配置文件"
+    }
+  ],
+  "deletes": [
+    "config/example_mod/",
+    "config/example.json",
+    "tacz/",
+    "shaderpacks/"
+  ]
+}

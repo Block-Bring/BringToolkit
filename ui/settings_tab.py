@@ -1,9 +1,11 @@
+import webbrowser
+
 from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout,
     QGroupBox, QCheckBox, QLabel, QPushButton
 )
 
-from core.app_info import APP_NAME, format_version_display
+from core.app_info import APP_NAME, format_version_display, GITHUB_REPO
 from core.check_update import check_for_updates
 from core.updater import UpdateDialog
 from core.config import config, save_config
@@ -75,7 +77,7 @@ class SettingsTab(QWidget):
         # 保存复选框的状态到配置
         config.set("settings.check_update", self.check_update_cb.isChecked())
         config.set("settings.insider_preview", self.insider_cb.isChecked())
-        
+
         # 保存到文件
         if save_config():
             show_info("保存成功", "设置已保存")
@@ -95,14 +97,14 @@ class SettingsTab(QWidget):
 
         # 根据配置决定是否检查预览版
         insider_preview = config.get("settings.insider_preview", False)
-        
+
         # 使用 ZJCore 的 run_in_background 简化多线程代码
         def task():
             return check_for_updates(insider_preview=insider_preview)
-        
+
         def on_finished(result):
             self._on_update_finished(result, original_text)
-        
+
         self.worker = run_in_background(task, on_finished=on_finished)
         self.worker.start()
 
@@ -114,6 +116,8 @@ class SettingsTab(QWidget):
         error = result.get("error")
         if error:
             show_error("检查更新失败", f"检查更新时遇到错误：{error}")
+            if result.get("format_mismatch"):
+                webbrowser.open(f"{GITHUB_REPO}/releases")
             return
 
         has_update = result.get("has_update", False)

@@ -5,9 +5,9 @@
 """
 import requests
 from packaging import version
-from core.app_info import APP_VERSION
-from tools.logger import logger
 
+from core.app_info import APP_VERSION, GITHUB_REPO
+from tools.logger import logger
 
 UPDATE_URL = (
     "https://ghfast.top/https://raw.githubusercontent.com/Block-Bring/BringToolkit/"
@@ -29,7 +29,9 @@ def check_for_updates(insider_preview=False):
                 "online_version": str or None,  # 线上版本号
                 "url": str or None,  # 下载链接
                 "error": str or None,  # 错误信息
-                "is_stable": bool  # 是否为稳定版更新
+                "is_stable": bool,  # 是否为稳定版更新
+                "format_mismatch": bool,  # 格式版本是否不匹配
+                "github_url": str or None  # GitHub Releases 地址（格式不匹配时）
             }
     """
     logger.info(f"正在检查更新... 当前版本：{APP_VERSION}")
@@ -40,7 +42,8 @@ def check_for_updates(insider_preview=False):
         "online_version": None,
         "url": None,
         "error": None,
-        "is_stable": True
+        "is_stable": True,
+        "format_mismatch": False,
     }
 
     try:
@@ -53,20 +56,49 @@ def check_for_updates(insider_preview=False):
             return result
 
         data = response.json()
-        
+
+        # 检查 format_version
+        format_version = data.get("format_version", 1)
+        EXPECTED_FORMAT_VERSION = 4  # 当前支持的格式版本
+
+        if format_version != EXPECTED_FORMAT_VERSION:
+            logger.warning(f"格式版本不匹配：本地支持 v{EXPECTED_FORMAT_VERSION}，线上为 v{format_version}")
+            result["format_mismatch"] = True
+            result["error"] = f"远程更新配置文件格式版本与本地不兼容，请尝试手动更新。\n（本地: {EXPECTED_FORMAT_VERSION}, 线上: {format_version}）"
+            return result
+
         # 根据是否检查预览版，选择不同的分支
         if insider_preview:
             update_info = data.get("insider_preview", {})
             online_version = update_info.get("version", "")
-            url = update_info.get("url", "")
+            url_data = update_info.get("url", {})
             has_new = update_info.get("has_insider_preview", False)
             result["is_stable"] = False
         else:
             update_info = data.get("stable", {})
             online_version = update_info.get("version", "")
-            url = update_info.get("url", "")
+            url_data = update_info.get("url", {})
             has_new = update_info.get("has_stable", False)
             result["is_stable"] = True
+
+        # 解析 URL（支持新格式：字典，或旧格式：字符串）
+        url = None
+        if isinstance(url_data, dict):
+            # 新格式（format_version >= 2）：{"1": "https://...", "2": "https://..."}
+            # 按数字键排序，取第一个可用的 URL
+            try:
+                # 尝试按数字键排序（"1", "2", "3"...）
+                sorted_keys = sorted(url_data.keys(), key=lambda x: int(x) if x.isdigit() else 999)
+                for key in sorted_keys:
+                    url = url_data.get(key, "")
+                    if url:
+                        break
+            except (ValueError, TypeError):
+                # 如果键不是数字，直接取第一个值
+                url = next(iter(url_data.values()), "")
+        elif isinstance(url_data, str):
+            # 旧格式（format_version == 1）：直接是字符串
+            url = url_data
 
         # 如果版本号为空，说明没有可用的版本信息
         if not online_version:
@@ -82,7 +114,7 @@ def check_for_updates(insider_preview=False):
         try:
             local_ver = version.parse(APP_VERSION)
             online_ver = version.parse(online_version)
-            
+
             if online_ver > local_ver:
                 logger.info("发现新版本！")
                 result["has_update"] = True

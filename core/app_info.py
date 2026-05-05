@@ -9,24 +9,8 @@ import sys
 
 # ===== 应用基本信息 =====
 APP_NAME = "Bring Toolkit"
-APP_VERSION = "1.0.0a4"  # 内部版本号，用于比较和存储
-
-
-# ===== 路径配置 =====
-# 程序数据目录（与 exe 同级的 BringToolkit 文件夹）
-if getattr(sys, 'frozen', False):
-    # PyInstaller 打包环境：使用 exe 所在目录
-    APP_DATA_DIR = os.path.join(os.path.dirname(sys.executable), "BringToolkit")
-else:
-    # 开发环境：使用项目根目录下的 data 文件夹
-    APP_DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data")
-
-# 自动创建数据目录
-os.makedirs(APP_DATA_DIR, exist_ok=True)
-
-CONFIG_PATH = os.path.join(APP_DATA_DIR, "config.json")  # 配置文件路径
-LATEST_LOG_PATH = os.path.join(APP_DATA_DIR, "latest.log")  # 最新日志文件路径
-RESOURCES_DIR = "resources"  # 资源目录名称
+APP_VERSION = "1.0.0a5"  # 内部版本号，用于比较和存储
+GITHUB_REPO = "https://github.com/Block-Bring/BringToolkit"  # GitHub 仓库地址
 
 
 # ===== 版本号格式化 =====
@@ -74,6 +58,35 @@ def format_version_display(version: str) -> str:
 
 # 初始化显示版本号
 APP_VERSION_DISPLAY = format_version_display(APP_VERSION)
+
+
+# ===== 路径配置 =====
+# 程序数据目录（自动创建）
+if getattr(sys, 'frozen', False):
+    # PyInstaller 打包环境：使用 exe 所在目录下的 BringToolkit 文件夹
+    APP_DATA_DIR = os.path.join(os.path.dirname(sys.executable), "BringToolkit")
+else:
+    # 开发环境：使用项目根目录下的 data 文件夹
+    APP_DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data")
+
+# 自动创建数据目录（带错误处理）
+try:
+    os.makedirs(APP_DATA_DIR, exist_ok=True)
+except Exception as e:
+    from PyQt6.QtWidgets import QMessageBox, QApplication
+    from tools.ZJTools import show_error
+    app = QApplication.instance() or QApplication(sys.argv)
+    show_error("严重错误", f"无法创建程序工作目录：{e}")
+    sys.exit(1)
+
+# 配置文件路径
+CONFIG_PATH = os.path.join(APP_DATA_DIR, "config.json")
+LATEST_LOG_PATH = os.path.join(APP_DATA_DIR, "latest.log")
+RESOURCES_DIR = "resources"  # 资源目录名称
+
+# 功能数据目录（自动创建）
+FUNC_DATA_DIR = os.path.join(APP_DATA_DIR, "func_data")
+os.makedirs(FUNC_DATA_DIR, exist_ok=True)
 
 
 # ===== 资源路径工具 =====

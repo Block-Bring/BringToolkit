@@ -11,10 +11,10 @@ from tools.logger import logger
 def create_default_config(config_path=None):
     """
     创建默认配置文件
-    
+
     参数:
         config_path: 配置文件路径，默认使用 core.app_info.CONFIG_PATH
-    
+
     返回:
         str: 配置文件路径
     """
@@ -22,13 +22,12 @@ def create_default_config(config_path=None):
         config_path = CONFIG_PATH
     # 定义默认配置
     default_config = {
-        "minecraft_directory": "",
         "settings": {
             "check_update": True,
             "insider_preview": False
         }
     }
-    
+
     # 如果配置文件不存在，则创建
     if not os.path.exists(config_path):
         logger.info(f"配置文件不存在，正在创建: {config_path}")  # type: ignore
@@ -37,5 +36,5 @@ def create_default_config(config_path=None):
         logger.info("默认配置文件创建成功")  # type: ignore
     else:
         logger.info(f"配置文件已存在: {config_path}")  # type: ignore
-    
+
     return config_path
