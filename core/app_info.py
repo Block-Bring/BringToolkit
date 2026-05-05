@@ -13,8 +13,19 @@ APP_VERSION = "1.0.0a4"  # 内部版本号，用于比较和存储
 
 
 # ===== 路径配置 =====
-CONFIG_PATH = "config.json"  # 配置文件路径
-LATEST_LOG_PATH = "latest.log"  # 最新日志文件路径
+# 程序数据目录（与 exe 同级的 BringToolkit 文件夹）
+if getattr(sys, 'frozen', False):
+    # PyInstaller 打包环境：使用 exe 所在目录
+    APP_DATA_DIR = os.path.join(os.path.dirname(sys.executable), "BringToolkit")
+else:
+    # 开发环境：使用项目根目录下的 data 文件夹
+    APP_DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data")
+
+# 自动创建数据目录
+os.makedirs(APP_DATA_DIR, exist_ok=True)
+
+CONFIG_PATH = os.path.join(APP_DATA_DIR, "config.json")  # 配置文件路径
+LATEST_LOG_PATH = os.path.join(APP_DATA_DIR, "latest.log")  # 最新日志文件路径
 RESOURCES_DIR = "resources"  # 资源目录名称
 
 
