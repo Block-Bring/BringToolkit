@@ -7,10 +7,10 @@
   },
   "insider_preview": {
     "has_insider_preview": true,
-    "version": "1.0.0a4",
+    "version": "1.0.0a5",
     "url": {
-      "1": "https://ghfast.top/https://github.com/Block-Bring/BringToolkit/releases/download/1.0.0a4/BringToolkit_v1.0.0a4_windows_amd64.exe",
-      "2": "https://github.com/Block-Bring/BringToolkit/releases/download/1.0.0a4/BringToolkit_v1.0.0a4_windows_amd64.exe"
+      "1": "https://ghfast.top/https://github.com/Block-Bring/BringToolkit/releases/download/1.0.0a5/BringToolkit_v1.0.0a5_windows_amd64.exe",
+      "2": "https://github.com/Block-Bring/BringToolkit/releases/download/1.0.0a5/BringToolkit_v1.0.0a5_windows_amd64.exe"
     }
   }
 }
