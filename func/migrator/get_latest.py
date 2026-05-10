@@ -1,7 +1,7 @@
 import os
 import requests
 from core.app_info import FUNC_DATA_DIR
-from tools.ZJTools import show_error
+from tools.NanaTools import show_error
 
 data_directory = os.path.join(FUNC_DATA_DIR, "migrator")
 
@@ -10,7 +10,7 @@ def requests_latest_migrate_file():
     请求最新的迁移文件
     """
     try:
-        response = requests.get("https://ghfast.top/github.com/Block-Bring/BringToolkit/raw/refs/heads/master/latest/migrate_latest.json")
+        response = requests.get("https://ghfast.top/github.com/Block-Bring/BringToolkit/raw/refs/heads/master/latest/func/migrate_latest.json")
         if response.status_code == 200:
             return response.json()
         else:

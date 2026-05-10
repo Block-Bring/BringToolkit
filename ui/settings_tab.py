@@ -1,5 +1,6 @@
 import webbrowser
 
+from PyQt6.QtCore import QTimer
 from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout,
     QGroupBox, QCheckBox, QLabel, QPushButton
@@ -9,7 +10,7 @@ from core.app_info import APP_NAME, format_version_display, GITHUB_REPO
 from core.check_update import check_for_updates
 from core.updater import UpdateDialog
 from core.config import config, save_config
-from tools.ZJTools import ask_yes_no, show_info, show_error, run_in_background
+from tools.NanaTools import ask_yes_no, show_info, show_error, run_in_background
 
 
 
@@ -80,9 +81,18 @@ class SettingsTab(QWidget):
 
         # 保存到文件
         if save_config():
-            show_info("保存成功", "设置已保存")
+            original_text = self.save_btn.text()
+            self.save_btn.setText("保存成功")
+            self.save_btn.setEnabled(False)
+            # 1秒后恢复按钮状态和文本
+            QTimer.singleShot(1000, lambda: self._restore_save_button(original_text))
         else:
             show_error("保存失败", "无法保存设置，请重试")
+
+    def _restore_save_button(self, original_text):
+        """恢复保存按钮的状态"""
+        self.save_btn.setText(original_text)
+        self.save_btn.setEnabled(True)
 
     def _on_check_update(self):
         """点击"检查更新"按钮时调用"""
@@ -117,6 +127,8 @@ class SettingsTab(QWidget):
         if error:
             show_error("检查更新失败", f"检查更新时遇到错误：{error}")
             if result.get("format_mismatch"):
+                webbrowser.open(f"{GITHUB_REPO}/releases")
+            if result.get("error_404"):
                 webbrowser.open(f"{GITHUB_REPO}/releases")
             return
 

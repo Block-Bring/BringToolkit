@@ -1,6 +1,9 @@
 """
-ZJCore - 简化语法工具箱
-用来简化过于复杂的实现代码。
+NanaTools - 纳西妲的贴心工具箱 🌿
+「知识，应当分享于众人。」
+
+提供常用的 UI 对话框和后台任务执行工具。
+由小吉祥草王亲自整理，愿智慧与你同在~ ✨
 """
 from PyQt6.QtWidgets import QMessageBox
 from PyQt6.QtCore import QThread, pyqtSignal
@@ -9,6 +12,8 @@ from PyQt6.QtCore import QThread, pyqtSignal
 def run_in_background(task_func, on_finished=None, on_error=None):
     """
     在后台线程执行耗时任务，避免阻塞 UI。
+    
+    🍃 纳西妲小贴士：让重要的事情在后台悄悄进行，不要打扰到用户哦~
     
     参数:
         task_func: 要在后台执行的函数
@@ -56,6 +61,8 @@ def ask_yes_no(title: str, message: str, default: bool = False) -> bool:
     """
     弹出一个带有"是/否"按钮的询问框。
     
+    🌟 纳西妲小贴士：每个选择都会带来不同的结果，要慎重考虑哦~
+    
     参数:
         title: 标题
         message: 内容
@@ -92,7 +99,10 @@ def ask_yes_no(title: str, message: str, default: bool = False) -> bool:
 
 
 def show_info(title: str, message: str):
-    """弹出一个“确定”的信息框"""
+    """
+    弹出一个"确定"的信息框
+    🌿 纳西妲小贴士：重要的信息要清晰地传达哦~
+    """
     box = QMessageBox()
     box.setWindowTitle(title)
     box.setText(message)
@@ -101,7 +111,10 @@ def show_info(title: str, message: str):
     box.exec()
 
 def show_error(title: str, message: str):
-    """弹出一个错误提示框"""
+    """
+    弹出一个错误提示框
+    ⚠️ 纳西妲小贴士：遇到问题不要慌，冷静分析就能找到解决办法~
+    """
     box = QMessageBox()
     box.setWindowTitle(title)
     box.setText(message)
@@ -110,7 +123,10 @@ def show_error(title: str, message: str):
     box.exec()
 
 def show_warning(title: str, message: str):
-    """弹出一个警告提示框"""
+    """
+    弹出一个警告提示框
+    🔔 纳西妲小贴士：小心谨慎总是好的，但也不要过度担心哦~
+    """
     box = QMessageBox()
     box.setWindowTitle(title)
     box.setText(message)

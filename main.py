@@ -24,14 +24,14 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle(APP_NAME)
-        self.resize(700, 400)
+        self.resize(650, 350)
 
         self.tabs = QTabWidget()
         self.setCentralWidget(self.tabs)
 
         home_tab = HomeTab()
         self.tabs.addTab(home_tab, "首页")
-        
+
         # 连接“开始使用”按钮到功能页
         home_tab.start_button.clicked.connect(lambda: self.tabs.setCurrentIndex(1))
 
@@ -61,16 +61,16 @@ if __name__ == "__main__":
     # 🌟 恭喜你发现了彩蛋！你是第 N 个看到这里的人！（N = 所有看过源码的人）
     app = QApplication(sys.argv)
     app.setFont(QFont("Microsoft YaHei", 9))
-    
+
     # 🚀 准备发射... 3, 2, 1, 启动！
     window = MainWindow()
-    
+
     # 设置窗口图标（兼容 PyInstaller 打包）
     icon_path = get_resource_path("resources/icon.ico")
     window.setWindowIcon(QIcon(icon_path))
-    
+
     window.show()
-    
+
     # 🎯 程序的主循环开始运行，直到用户关闭窗口
     # 祝你使用愉快！(｡•̀ᴗ-)✧
     sys.exit(app.exec())

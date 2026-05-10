@@ -1,6 +1,6 @@
 """
 检查更新模块
-从 GitHub 上的 latest/app_latest.json 获取最新版本信息，
+从 GitHub 上的 latest/core/app_latest.json 获取最新版本信息，
 与本地 APP_VERSION 比较，判断是否需要更新。
 """
 import requests
@@ -11,7 +11,7 @@ from tools.logger import logger
 
 UPDATE_URL = (
     "https://ghfast.top/https://raw.githubusercontent.com/Block-Bring/BringToolkit/"
-    "refs/heads/master/latest/app_latest.json"
+    "refs/heads/master/latest/core/app_latest.json"
 )
 
 
@@ -44,12 +44,19 @@ def check_for_updates(insider_preview=False):
         "error": None,
         "is_stable": True,
         "format_mismatch": False,
+        "error_404": False
     }
 
     try:
         response = requests.get(UPDATE_URL, timeout=10)
 
-        if response.status_code != 200:
+        if response.status_code == 404:
+            logger.warning("未找到更新配置文件")
+            result["error_404"] = True
+            result["error"] = "\n在 GitHub 上未找到更新配置文件。\n\n可能是更新配置文件已移动，请手动从 GitHub Releases 上下载最新版本。"
+            return result
+
+        elif response.status_code != 200:
             error_msg = f"HTTP {response.status_code}"
             logger.error(f"检查更新失败：{error_msg}")
             result["error"] = error_msg
@@ -62,7 +69,7 @@ def check_for_updates(insider_preview=False):
         EXPECTED_FORMAT_VERSION = 4  # 当前支持的格式版本
 
         if format_version != EXPECTED_FORMAT_VERSION:
-            logger.warning(f"格式版本不匹配：本地支持 v{EXPECTED_FORMAT_VERSION}，线上为 v{format_version}")
+            logger.warning(f"格式版本不匹配：本地支持 {EXPECTED_FORMAT_VERSION}，线上为 {format_version}")
             result["format_mismatch"] = True
             result["error"] = f"远程更新配置文件格式版本与本地不兼容，请尝试手动更新。\n（本地: {EXPECTED_FORMAT_VERSION}, 线上: {format_version}）"
             return result
