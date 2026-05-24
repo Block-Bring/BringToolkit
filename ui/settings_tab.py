@@ -10,7 +10,7 @@ from core.app_info import APP_NAME, format_version_display, GITHUB_REPO
 from core.check_update import check_for_updates
 from core.updater import UpdateDialog
 from core.config import config, save_config
-from tools.NanaTools import ask_yes_no, show_info, show_error, run_in_background
+from utils.nana_tools import ask_yes_no, show_info, show_error, run_in_background
 
 
 

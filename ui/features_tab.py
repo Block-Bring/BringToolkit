@@ -4,7 +4,7 @@ from PyQt6.QtWidgets import (
 from PyQt6.QtCore import Qt
 
 
-class FuncTab(QWidget):
+class FeaturesTab(QWidget):
     def __init__(self):
         super().__init__()
         
@@ -132,7 +132,7 @@ class FuncTab(QWidget):
     
     def _on_bring_craft_migrate(self):
         """Bring Craft 数据迁移按钮点击事件"""
-        from func.migrator.window import MigratorWindow
+        from features.migrator.window import MigratorWindow
         
         # 创建并显示迁移窗口
         dialog = MigratorWindow(self)

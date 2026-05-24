@@ -7,7 +7,7 @@ import requests
 from packaging import version
 
 from core.app_info import APP_VERSION, GITHUB_REPO
-from tools.logger import logger
+from utils.logger import logger
 
 UPDATE_URL = (
     "https://ghfast.top/https://raw.githubusercontent.com/Block-Bring/BringToolkit/"

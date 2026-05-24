@@ -74,7 +74,7 @@ try:
     os.makedirs(APP_DATA_DIR, exist_ok=True)
 except Exception as e:
     from PyQt6.QtWidgets import QMessageBox, QApplication
-    from tools.NanaTools import show_error
+    from utils.nana_tools import show_error
     app = QApplication.instance() or QApplication(sys.argv)
     show_error("严重错误", f"无法创建程序工作目录：{e}")
     sys.exit(1)
@@ -85,8 +85,8 @@ LATEST_LOG_PATH = os.path.join(APP_DATA_DIR, "latest.log")
 RESOURCES_DIR = "resources"  # 资源目录名称
 
 # 功能数据目录（自动创建）
-FUNC_DATA_DIR = os.path.join(APP_DATA_DIR, "func_data")
-os.makedirs(FUNC_DATA_DIR, exist_ok=True)
+FEATURES_DATA_DIR = os.path.join(APP_DATA_DIR, "features_data")
+os.makedirs(FEATURES_DATA_DIR, exist_ok=True)
 
 
 # ===== 资源路径工具 =====

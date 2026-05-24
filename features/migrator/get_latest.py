@@ -1,9 +1,9 @@
 import os
 import requests
-from core.app_info import FUNC_DATA_DIR
-from tools.NanaTools import show_error
+from core.app_info import FEATURES_DATA_DIR
+from utils.nana_tools import show_error
 
-data_directory = os.path.join(FUNC_DATA_DIR, "migrator")
+data_directory = os.path.join(FEATURES_DATA_DIR, "migrator")
 
 def requests_latest_migrate_file():
     """

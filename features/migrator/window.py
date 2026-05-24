@@ -9,8 +9,8 @@ from PyQt6.QtWidgets import (
 )
 from PyQt6.QtCore import Qt
 
-from tools.logger import logger
-from tools.NanaTools import ask_yes_no, show_info, show_warning
+from utils.logger import logger
+from utils.nana_tools import ask_yes_no, show_info, show_warning
 
 
 class MigratorWindow(QDialog):

@@ -15,7 +15,7 @@ from PyQt6.QtWidgets import QApplication, QMainWindow, QTabWidget, QScrollArea
 from PyQt6.QtGui import QFont, QIcon
 from core.app_info import APP_NAME, get_resource_path
 from ui.home_tab import HomeTab
-from ui.func_tab import FuncTab
+from ui.features_tab import FeaturesTab
 from ui.settings_tab import SettingsTab
 from ui.about_tab import AboutTab
 
@@ -35,10 +35,10 @@ class MainWindow(QMainWindow):
         # 连接“开始使用”按钮到功能页
         home_tab.start_button.clicked.connect(lambda: self.tabs.setCurrentIndex(1))
 
-        func_tab = FuncTab()
+        features_tab = FeaturesTab()
         scroll_func = QScrollArea()
         scroll_func.setWidgetResizable(True)
-        scroll_func.setWidget(func_tab)
+        scroll_func.setWidget(features_tab)
         self.tabs.addTab(scroll_func, "功能")
 
         settings_tab = SettingsTab() # 设置分组
