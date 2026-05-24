@@ -7,6 +7,10 @@
 [![Platform](https://img.shields.io/badge/Platform-Windows-lightgrey.svg)](https://www.microsoft.com/windows)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
+> [!WARNING]
+> 本项目仍处于早期阶段
+>
+> 本项目有相当部分的代码由智能体辅助生成，虽然经过了人工测试，但其仍可能包含不稳定性，欢迎提交问题！
 ---
 
 ## 💭 这是什么？
@@ -16,27 +20,6 @@
 ### ✨ 有什么功能？
 
 - 🎮 **整合包个性化数据迁移** - 把更新整合包前的个性化数据迁移进去
-
----
-
-## 📁 文件结构
-
-```
-BringToolkit/
-├── core/                   # 核心功能
-│   ├── app_info.py        # 软件名字、版本号
-│   ├── config/            # 配置管理
-│   ├── logger.py          # 日志记录（彩色的哦）
-│   └── update.py          # 检查更新
-├── main_window/           # 界面
-│   ├── home_tab.py        # 首页
-│   ├── func_tab.py        # 功能页
-│   ├── settings_tab.py    # 设置页
-│   └── about_tab.py       # 关于页
-├── ZJCore.py             # 我自己写的小工具函数
-├── main.py               # 从这里启动
-└── config.json           # 配置文件（自动生成）
-```
 
 ---
 
