@@ -1,0 +1,30 @@
+name: 优化建议
+description: 代码、UI、性能等方面的改进想法
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        觉得哪里可以做得更好？不管是代码结构、界面美观还是运行速度，欢迎提出来！
+
+  - type: dropdown
+    id: type
+    attributes:
+      label: 优化类型
+      options:
+        - UI / 界面美观
+        - 代码质量 / 重构
+        - 性能优化
+        - 文档 / 注释
+        - 其他
+    validations:
+      required: true
+
+  - type: textarea
+    id: detail
+    attributes:
+      label: 具体建议
+      description: 说说你的想法
+      placeholder: 我觉得 XXX 可以改成 YYY，因为...
+    validations:
+      required: true
