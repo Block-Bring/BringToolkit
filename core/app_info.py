@@ -9,6 +9,7 @@ import sys
 APP_NAME = "Bring Toolkit"
 APP_VERSION = "1.0.0a5"
 GITHUB_REPO = "https://github.com/Block-Bring/BringToolkit"
+GITHUB_RAW_BASE = "https://ghfast.top/https://raw.githubusercontent.com/Block-Bring/BringToolkit/refs/heads/master"
 
 
 def format_version_display(version: str) -> str:

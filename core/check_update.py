@@ -8,13 +8,10 @@ from dataclasses import dataclass
 import requests
 from packaging import version
 
-from core.app_info import APP_VERSION, GITHUB_REPO
+from core.app_info import APP_VERSION, GITHUB_RAW_BASE
 from utils.logger import logger
 
-UPDATE_URL = (
-    "https://ghfast.top/https://raw.githubusercontent.com/Block-Bring/BringToolkit/"
-    "refs/heads/master/latest/core/app_latest.json"
-)
+UPDATE_URL = f"{GITHUB_RAW_BASE}/latest/core/app_latest.json"
 EXPECTED_FORMAT_VERSION = 4
 
 
