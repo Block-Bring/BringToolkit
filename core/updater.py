@@ -28,10 +28,10 @@ class DownloadWorker(QThread):
             logger.info(f"开始下载更新: {self.url}")
             response = requests.get(self.url, stream=True, timeout=30)
             response.raise_for_status()
-            
+
             total_size = int(response.headers.get('content-length', 0))
             downloaded = 0
-            
+
             with open(self.temp_file, 'wb') as f:
                 for chunk in response.iter_content(chunk_size=8192):
                     if chunk:
@@ -39,14 +39,13 @@ class DownloadWorker(QThread):
                         downloaded += len(chunk)
                         percentage = int((downloaded / total_size) * 100) if total_size > 0 else 0
                         self.progress_signal.emit(downloaded, total_size, percentage)
-            
+
             logger.info("下载完成")
             self.finished_signal.emit(self.temp_file)
-            
+
         except Exception as e:
-            error_msg = f"下载失败: {e}"
-            logger.error(error_msg)
-            self.error_signal.emit(error_msg)
+            logger.error(f"下载失败: {e}")
+            self.error_signal.emit(f"下载失败: {e}")
 
 
 class UpdateDialog(QDialog):
@@ -147,23 +146,16 @@ class UpdateDialog(QDialog):
     def update_progress(self, downloaded, total, percentage):
         """更新进度"""
         self.progress_bar.setValue(percentage)
-        
-        # 智能选择单位：根据文件大小自动切换 B/MB/GB
-        if total >= 1024 * 1024 * 1024:  # >= 1GB
-            unit = "GB"
-            divisor = 1024 * 1024 * 1024
-        elif total >= 1024 * 1024:  # >= 1MB
-            unit = "MB"
-            divisor = 1024 * 1024
-        else:  # < 1MB
-            unit = "B"
-            divisor = 1
-        
-        downloaded_display = downloaded / divisor
-        total_display = total / divisor
-        
+
+        if total >= 1024 * 1024 * 1024:
+            unit, divisor = "GB", 1024 ** 3
+        elif total >= 1024 * 1024:
+            unit, divisor = "MB", 1024 ** 2
+        else:
+            unit, divisor = "B", 1
+
         self.progress_detail.setText(
-            f"{downloaded_display:.2f} {unit} / {total_display:.2f} {unit} ({percentage}%)"
+            f"{downloaded / divisor:.2f} {unit} / {total / divisor:.2f} {unit} ({percentage}%)"
         )
 
     def download_finished(self, file_path):
@@ -171,14 +163,13 @@ class UpdateDialog(QDialog):
         self.downloaded_file = file_path
         self.status_label.setText("✅ 下载完成！")
         self.progress_bar.setValue(100)
-        self.progress_detail.setText("点击\"开始更新\"按钮安装更新")
-        
-        # 改变按钮为"安装更新"
+        self.progress_detail.setText('点击"开始更新"按钮安装更新')
+
         self.start_btn.setText("安装更新")
         self.start_btn.setEnabled(True)
         self._set_start_action(self.install_update)
         self.cancel_btn.setText("关闭")
-    
+
     def download_error(self, error_msg):
         """下载出错"""
         self.status_label.setText("❌ 下载失败")
@@ -193,20 +184,16 @@ class UpdateDialog(QDialog):
         """安装更新（替换程序）"""
         if not self.downloaded_file or not os.path.exists(self.downloaded_file):
             return
-        
+
         try:
             logger.info("开始安装更新...")
             self.status_label.setText("正在安装更新...")
             self.start_btn.setEnabled(False)
             self.cancel_btn.setEnabled(False)
-            
-            # 获取当前程序路径
+
             current_exe = sys.executable if getattr(sys, 'frozen', False) else sys.argv[0]
-            
-            # Windows 下不能直接替换运行中的 exe，需要特殊处理
-            # 方案：创建一个批处理文件，在程序退出后执行替换
             batch_script = os.path.join(tempfile.gettempdir(), "bring_toolkit_update.bat")
-            
+
             with open(batch_script, 'w', encoding='gbk') as f:
                 f.write("@echo off\n")
                 f.write("echo ====================================\n")
@@ -220,7 +207,6 @@ class UpdateDialog(QDialog):
                 f.write("timeout /t 1 /nobreak >nul\n")
                 f.write("echo.\n")
                 f.write("echo [2/3] 正在替换文件...\n")
-                # 使用循环重试机制，确保文件锁释放
                 f.write('set retry_count=0\n')
                 f.write(':retry_copy\n')
                 f.write(f'copy /y "{self.downloaded_file}" "{current_exe}" >nul 2>&1\n')
@@ -248,12 +234,10 @@ class UpdateDialog(QDialog):
             logger.info("更新脚本已创建，请手动重启程序")
             self.status_label.setText("✅ 更新下载完成！")
             self.progress_detail.setText("请关闭此窗口并手动重新启动程序")
-            
-            # 启动批处理
+
             import subprocess
             subprocess.Popen(batch_script, creationflags=subprocess.CREATE_NEW_CONSOLE)
-            
-            # 禁用按钮，提示用户
+
             self.start_btn.setEnabled(False)
             self.start_btn.setText("请手动重启")
             self.cancel_btn.setText("关闭")
@@ -280,12 +264,11 @@ class UpdateDialog(QDialog):
         """取消/关闭对话框"""
         if hasattr(self, 'worker') and self.worker.isRunning():
             self.worker.terminate()
-        
-        # 清理临时文件
+
         if self.downloaded_file and os.path.exists(self.downloaded_file):
             try:
                 os.remove(self.downloaded_file)
             except:
                 pass
-        
+
         super().reject()

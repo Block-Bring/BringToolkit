@@ -24,7 +24,7 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle(APP_NAME)
-        self.resize(650, 350)
+        self.resize(720, 460)
 
         self.tabs = QTabWidget()
         self.setCentralWidget(self.tabs)
