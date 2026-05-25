@@ -1,13 +1,13 @@
 [build-system]
 requires = ["setuptools>=64"]
-build-backend = "setuptools.backends._legacy:_Backend"
+build-backend = "setuptools.build_meta"
 
 [project]
 name = "bring-toolkit"
 version = "1.0.0a5"
 description = "一个为 Minecraft 玩家打造的工具箱"
 readme = "README.md"
-license = {text = "MIT"}
+license = "MIT"
 authors = [
     {name = "Block-Bring"},
 ]
@@ -17,6 +17,9 @@ dependencies = [
     "requests>=2.32.5",
     "packaging>=23.2",
 ]
+
+[tool.setuptools.packages.find]
+include = ["core*", "views*", "features*", "utils*"]
 
 [tool.pytest.ini_options]
 pythonpath = ["."]
