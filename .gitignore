@@ -226,3 +226,6 @@ __marimo__/
 # IDE and editor files (project-specific)
 .idea/
 .vscode/
+
+# Claude Code configuration
+.claude/
