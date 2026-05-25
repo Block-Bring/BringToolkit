@@ -7,7 +7,7 @@ from PyQt6.QtWidgets import (
 )
 
 from core.app_info import APP_NAME, format_version_display, GITHUB_REPO
-from core.check_update import check_for_updates
+from core.check_update import check_for_updates, CheckResult
 from core.updater import UpdateDialog
 from core.config import config, save_config
 from utils.nana_tools import ask_yes_no, show_info, show_error, run_in_background
@@ -118,32 +118,22 @@ class SettingsTab(QWidget):
         self.worker = run_in_background(task, on_finished=on_finished)
         self.worker.start()
 
-    def _on_update_finished(self, result, original_text):
+    def _on_update_finished(self, result: CheckResult, original_text):
         """更新检查完成后的回调（在主线程中执行）"""
         self.check_update_btn.setText(original_text)
         self.check_update_btn.setEnabled(True)
 
-        error = result.get("error")
-        if error:
-            show_error("检查更新失败", f"检查更新时遇到错误：{error}")
-            if result.get("format_mismatch"):
-                webbrowser.open(f"{GITHUB_REPO}/releases")
-            if result.get("error_404"):
+        if result.error:
+            show_error("检查更新失败", f"检查更新时遇到错误：{result.error}")
+            if result.format_mismatch or result.error_404:
                 webbrowser.open(f"{GITHUB_REPO}/releases")
             return
 
-        has_update = result.get("has_update", False)
-        online_version = result.get("online_version")
-        url = result.get("url")
-        is_stable = result.get("is_stable", True)
-
-        if has_update:
-            version_type = "稳定版" if is_stable else "预览版"
-            formatted_online_version = format_version_display(online_version)
-            question = ask_yes_no("发现新版本", f"当前所获取到的最新版本为 {formatted_online_version}（{version_type}）\n是否更新？")
-            if question and url:
-                # 显示更新对话框
-                update_dialog = UpdateDialog(formatted_online_version, url, self)
-                update_dialog.exec()
+        if result.has_update and result.latest_version and result.download_url:
+            version_type = "稳定版" if result.is_stable else "预览版"
+            formatted = format_version_display(result.latest_version)
+            question = ask_yes_no("发现新版本", f"当前所获取到的最新版本为 {formatted}（{version_type}）\n是否更新？")
+            if question:
+                UpdateDialog(formatted, result.download_url, self).exec()
         else:
             show_info("无可用更新", f"您的 {APP_NAME} 已是最新版本。")

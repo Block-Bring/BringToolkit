@@ -3,6 +3,8 @@
 """
 import os
 import sys
+import tempfile
+
 import requests
 from PyQt6.QtWidgets import (QDialog, QVBoxLayout, QHBoxLayout, QLabel, 
                              QProgressBar, QPushButton)
@@ -54,7 +56,7 @@ class UpdateDialog(QDialog):
         super().__init__(parent)
         self.version = version
         self.url = url
-        self.temp_file = "temp_update.exe"
+        self.temp_file = os.path.join(tempfile.gettempdir(), "bring_toolkit_update.exe")
         self.downloaded_file = None
         
         self.init_ui()
@@ -174,8 +176,7 @@ class UpdateDialog(QDialog):
         # 改变按钮为"安装更新"
         self.start_btn.setText("安装更新")
         self.start_btn.setEnabled(True)
-        self.start_btn.clicked.disconnect()  # type: ignore
-        self.start_btn.clicked.connect(self.install_update)  # type: ignore
+        self._set_start_action(self.install_update)
         self.cancel_btn.setText("关闭")
     
     def download_error(self, error_msg):
@@ -185,8 +186,7 @@ class UpdateDialog(QDialog):
         self.progress_detail.setText(error_msg)
         self.start_btn.setEnabled(True)
         self.start_btn.setText("重试")
-        self.start_btn.clicked.disconnect()  # type: ignore
-        self.start_btn.clicked.connect(self.start_download)  # type: ignore
+        self._set_start_action(self.start_download)
         self.cancel_btn.setText("关闭")
     
     def install_update(self):
@@ -205,7 +205,7 @@ class UpdateDialog(QDialog):
             
             # Windows 下不能直接替换运行中的 exe，需要特殊处理
             # 方案：创建一个批处理文件，在程序退出后执行替换
-            batch_script = "update.bat"
+            batch_script = os.path.join(tempfile.gettempdir(), "bring_toolkit_update.bat")
             
             with open(batch_script, 'w', encoding='gbk') as f:
                 f.write("@echo off\n")
@@ -268,6 +268,14 @@ class UpdateDialog(QDialog):
             self.start_btn.setEnabled(True)
             self.cancel_btn.setEnabled(True)
     
+    def _set_start_action(self, action):
+        """安全切换按钮行为，避免重复 disconnect 报错"""
+        try:
+            self.start_btn.clicked.disconnect()
+        except TypeError:
+            pass
+        self.start_btn.clicked.connect(action)
+
     def reject(self):
         """取消/关闭对话框"""
         if hasattr(self, 'worker') and self.worker.isRunning():
