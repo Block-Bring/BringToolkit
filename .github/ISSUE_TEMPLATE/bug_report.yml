@@ -1,4 +1,4 @@
-name: Bug 反馈
+name: "🐛 Bug 反馈"
 description: 报告一个 Bug 帮助我们改进
 labels: ["bug"]
 body:
