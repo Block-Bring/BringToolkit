@@ -14,10 +14,10 @@ os.environ["QT_QPA_PLATFORM"] = "windows:fontengine=freetype"
 from PyQt6.QtWidgets import QApplication, QMainWindow, QTabWidget, QScrollArea
 from PyQt6.QtGui import QFont, QIcon
 from core.app_info import APP_NAME, get_resource_path
-from ui.home_tab import HomeTab
-from ui.features_tab import FeaturesTab
-from ui.settings_tab import SettingsTab
-from ui.about_tab import AboutTab
+from views.home_tab import HomeTab
+from views.features_tab import FeaturesTab
+from views.settings_tab import SettingsTab
+from views.about_tab import AboutTab
 
 
 class MainWindow(QMainWindow):
