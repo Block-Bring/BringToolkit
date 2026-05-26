@@ -14,12 +14,12 @@ def requests_latest_migrate_file():
             return response.json()
         else:
             show_error("错误", "无法获取最新版本信息")
-    except:
+    except Exception:
         show_error("错误", "无法连接服务器")
 
 def create_data_directory():
     """创建功能目录"""
     try:
         os.makedirs(data_directory, exist_ok=True)
-    except:
+    except Exception:
         show_error("严重错误", "无法创建功能目录")

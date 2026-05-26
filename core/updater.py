@@ -268,7 +268,7 @@ class UpdateDialog(QDialog):
         if self.downloaded_file and os.path.exists(self.downloaded_file):
             try:
                 os.remove(self.downloaded_file)
-            except:
+            except OSError:
                 pass
 
         super().reject()

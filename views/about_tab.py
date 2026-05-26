@@ -120,7 +120,7 @@ class AboutTab(QWidget):
         layout.addStretch()
 
         # ===== 底部版权信息 =====
-        copyright_label = QLabel(f"© 2026 QuickYeah Studio. All rights reserved.")
+        copyright_label = QLabel("© 2026 QuickYeah Studio. All rights reserved.")
         copyright_label.setStyleSheet("font-size: 11px; color: lightgray;")
         copyright_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(copyright_label)

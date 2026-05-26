@@ -1,7 +1,6 @@
 """
 日志模块 - 同时写入文件和控制台
 """
-import os
 from datetime import datetime
 from core.app_info import LATEST_LOG_PATH
 
