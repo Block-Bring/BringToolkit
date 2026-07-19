@@ -1,36 +1,33 @@
 from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import QHBoxLayout, QLabel, QPushButton, QVBoxLayout, QWidget
+from PyQt6.QtWidgets import QHBoxLayout, QLabel, QPushButton, QVBoxLayout
 
 from core.app_info import APP_NAME, APP_VERSION_DISPLAY
+from views.base_tab import BaseTab
 
 
-class HomeTab(QWidget):
+class HomeTab(BaseTab):
     def __init__(self):
         super().__init__()
-
-        layout = QVBoxLayout(self)
-        layout.setContentsMargins(20, 20, 20, 20)
-        layout.setSpacing(15)
 
         title = QLabel(f"🛠️ {APP_NAME}")
         title.setStyleSheet("font-size: 24px; font-weight: bold;")
         title.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        layout.addWidget(title)
+        self.main_layout.addWidget(title)
 
         subtitle = QLabel("Minecraft 实用工具箱")
         subtitle.setStyleSheet("font-size: 14px; color: gray;")
         subtitle.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        layout.addWidget(subtitle)
+        self.main_layout.addWidget(subtitle)
 
         version = QLabel(f"版本 {APP_VERSION_DISPLAY}")
         version.setStyleSheet("font-size: 12px;")
         version.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        layout.addWidget(version)
+        self.main_layout.addWidget(version)
 
         separator = QLabel("─" * 50)
         separator.setStyleSheet("color: lightgray; font-size: 12px;")
         separator.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        layout.addWidget(separator)
+        self.main_layout.addWidget(separator)
 
         features_layout = QVBoxLayout()
         features_layout.setSpacing(8)
@@ -43,15 +40,15 @@ class HomeTab(QWidget):
             label.setAlignment(Qt.AlignmentFlag.AlignCenter)
             features_layout.addWidget(label)
 
-        layout.addLayout(features_layout)
+        self.main_layout.addLayout(features_layout)
 
-        layout.addStretch()
+        self.main_layout.addStretch()
 
         note = QLabel("💡 从上方选项卡选择你需要的功能开始使用")
         note.setStyleSheet("font-size: 12px; color: gray;")
         note.setAlignment(Qt.AlignmentFlag.AlignCenter)
         note.setWordWrap(True)
-        layout.addWidget(note)
+        self.main_layout.addWidget(note)
 
         button_layout = QHBoxLayout()
         button_layout.setSpacing(10)
@@ -68,4 +65,4 @@ class HomeTab(QWidget):
 
         button_layout.addStretch()
 
-        layout.addLayout(button_layout)
+        self.main_layout.addLayout(button_layout)

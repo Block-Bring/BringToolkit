@@ -6,10 +6,10 @@
 
 from dataclasses import dataclass
 
-import requests
 from packaging import version
 
 from core.app_info import APP_VERSION, GITHUB_RAW_BASE
+from utils.downloader import fetch_json
 from utils.logger import logger
 
 UPDATE_URL = f"{GITHUB_RAW_BASE}/latest/core/app_latest.json"
@@ -58,79 +58,64 @@ def check_for_updates(insider_preview=False) -> CheckResult:
     logger.info(f"正在检查更新... 当前版本：{APP_VERSION}")
     logger.info(f"检查类型：{'Insider Preview' if insider_preview else '稳定版'}")
 
-    try:
-        response = requests.get(UPDATE_URL, timeout=10)
-
-        if response.status_code == 404:
+    data, error = fetch_json(UPDATE_URL)
+    if error:
+        if error == "not_found":
             logger.warning("未找到更新配置文件")
             return CheckResult(
                 error="未找到更新配置文件，请手动从 GitHub Releases 下载最新版本。", error_404=True
             )
+        logger.error(f"检查更新失败：{error}")
+        return CheckResult(error=error)
 
-        elif response.status_code != 200:
-            error_msg = f"HTTP {response.status_code}"
-            logger.error(f"检查更新失败：{error_msg}")
-            return CheckResult(error=error_msg)
+    # 检查 format_version
+    format_version = data.get("format_version", 1)
+    if format_version != EXPECTED_FORMAT_VERSION:
+        logger.warning(
+            f"格式版本不匹配：本地支持 {EXPECTED_FORMAT_VERSION}，线上为 {format_version}"
+        )
+        return CheckResult(
+            format_mismatch=True,
+            error=(
+                "远程更新配置文件格式版本与本地不兼容，请尝试手动更新。\n"
+                f"（本地: {EXPECTED_FORMAT_VERSION}, 线上: {format_version}）"
+            ),
+        )
 
-        data = response.json()
+    # 根据是否检查预览版，选择不同的分支
+    if insider_preview:
+        update_info = data.get("insider_preview", {})
+        result = CheckResult(is_stable=False)
+    else:
+        update_info = data.get("stable", {})
+        result = CheckResult(is_stable=True)
 
-        # 检查 format_version
-        format_version = data.get("format_version", 1)
-        if format_version != EXPECTED_FORMAT_VERSION:
-            logger.warning(
-                f"格式版本不匹配：本地支持 {EXPECTED_FORMAT_VERSION}，线上为 {format_version}"
-            )
-            return CheckResult(
-                format_mismatch=True,
-                error=(
-                    "远程更新配置文件格式版本与本地不兼容，请尝试手动更新。\n"
-                    f"（本地: {EXPECTED_FORMAT_VERSION}, 线上: {format_version}）"
-                ),
-            )
+    online_version = update_info.get("version", "")
+    url_data = update_info.get("url", {})
 
-        # 根据是否检查预览版，选择不同的分支
-        if insider_preview:
-            update_info = data.get("insider_preview", {})
-            result = CheckResult(is_stable=False)
-        else:
-            update_info = data.get("stable", {})
-            result = CheckResult(is_stable=True)
-
-        online_version = update_info.get("version", "")
-        url_data = update_info.get("url", {})
-
-        # 如果版本号为空，说明没有可用的版本信息
-        if not online_version:
-            logger.info("没有可用的版本信息")
-            return result
-
-        url = _resolve_download_url(url_data)
-        logger.info(f"线上版本：{online_version}")
-
-        # 使用智能版本号比较（支持 1.0.0, 1.0.0a1, 1.0.0b2 等格式）
-        try:
-            local_ver = version.parse(APP_VERSION)
-            online_ver = version.parse(online_version)
-            has_update = online_ver > local_ver
-        except Exception as e:
-            logger.warning(f"版本号解析失败 ({e})，使用字符串比较")
-            has_update = online_version != APP_VERSION
-
-        if has_update:
-            logger.info("发现新版本！")
-        else:
-            logger.info("已是最新版本。")
-
-        result.has_update = has_update
-        result.latest_version = online_version
-        result.download_url = url
+    # 如果版本号为空，说明没有可用的版本信息
+    if not online_version:
+        logger.info("没有可用的版本信息")
         return result
 
-    except requests.exceptions.RequestException as e:
-        error_msg = f"网络错误 - {e}"
-        logger.error(f"检查更新失败：{error_msg}")
-        return CheckResult(error=error_msg)
+    url = _resolve_download_url(url_data)
+    logger.info(f"线上版本：{online_version}")
+
+    # 使用智能版本号比较（支持 1.0.0, 1.0.0a1, 1.0.0b2 等格式）
+    try:
+        local_ver = version.parse(APP_VERSION)
+        online_ver = version.parse(online_version)
+        has_update = online_ver > local_ver
     except Exception as e:
-        error_msg = f"未知错误 - {e}"
-        logger.error(f"检查更新失败：{error_msg}")
-        return CheckResult(error=error_msg)
+        logger.warning(f"版本号解析失败 ({e})，使用字符串比较")
+        has_update = online_version != APP_VERSION
+
+    if has_update:
+        logger.info("发现新版本！")
+    else:
+        logger.info("已是最新版本。")
+
+    result.has_update = has_update
+    result.latest_version = online_version
+    result.download_url = url
+    return result

@@ -30,27 +30,19 @@ class MainWindow(QMainWindow):
         home_tab = HomeTab()
         self.tabs.addTab(home_tab, "首页")
 
-        # 连接“开始使用”按钮到功能页
+        # 连接"开始使用"按钮到功能页
         home_tab.start_button.clicked.connect(lambda: self.tabs.setCurrentIndex(1))
 
-        features_tab = FeaturesTab()
-        scroll_features = QScrollArea()
-        scroll_features.setWidgetResizable(True)
-        scroll_features.setWidget(features_tab)
-        self.tabs.addTab(scroll_features, "功能")
+        self._add_scrolled_tab(FeaturesTab(), "功能")
+        self._add_scrolled_tab(SettingsTab(), "设置")
+        self._add_scrolled_tab(AboutTab(), "关于")
 
-        settings_tab = SettingsTab()
-        scroll_settings = QScrollArea()
-        scroll_settings.setWidgetResizable(True)
-        scroll_settings.setWidget(settings_tab)
-        self.tabs.addTab(scroll_settings, "设置")
-
-        # 添加关于页面（带滚动条）
-        about_tab = AboutTab()
-        scroll_about = QScrollArea()
-        scroll_about.setWidgetResizable(True)
-        scroll_about.setWidget(about_tab)
-        self.tabs.addTab(scroll_about, "关于")
+    def _add_scrolled_tab(self, widget, title):
+        """将 widget 包裹在 QScrollArea 后添加到标签页"""
+        scroll = QScrollArea()
+        scroll.setWidgetResizable(True)
+        scroll.setWidget(widget)
+        self.tabs.addTab(scroll, title)
 
 
 if __name__ == "__main__":

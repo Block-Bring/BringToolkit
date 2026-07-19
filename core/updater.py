@@ -6,48 +6,12 @@ import os
 import sys
 import tempfile
 
-import requests
-from PyQt6.QtCore import Qt, QThread, pyqtSignal
+from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QDialog, QHBoxLayout, QLabel, QProgressBar, QPushButton, QVBoxLayout
 
+from utils.downloader import DownloadWorker
 from utils.logger import logger
-
-
-class DownloadWorker(QThread):
-    """后台下载线程"""
-
-    progress_signal = pyqtSignal(int, int, int)  # 已下载, 总大小, 百分比
-    finished_signal = pyqtSignal(str)  # 临时文件路径
-    error_signal = pyqtSignal(str)  # 错误信息
-
-    def __init__(self, url, temp_file):
-        super().__init__()
-        self.url = url
-        self.temp_file = temp_file
-
-    def run(self):
-        try:
-            logger.info(f"开始下载更新: {self.url}")
-            response = requests.get(self.url, stream=True, timeout=30)
-            response.raise_for_status()
-
-            total_size = int(response.headers.get("content-length", 0))
-            downloaded = 0
-
-            with open(self.temp_file, "wb") as f:
-                for chunk in response.iter_content(chunk_size=8192):
-                    if chunk:
-                        f.write(chunk)
-                        downloaded += len(chunk)
-                        percentage = int((downloaded / total_size) * 100) if total_size > 0 else 0
-                        self.progress_signal.emit(downloaded, total_size, percentage)
-
-            logger.info("下载完成")
-            self.finished_signal.emit(self.temp_file)
-
-        except Exception as e:
-            logger.error(f"下载失败: {e}")
-            self.error_signal.emit(f"下载失败: {e}")
+from utils.style import GREEN_BUTTON
 
 
 class UpdateDialog(QDialog):
@@ -110,24 +74,7 @@ class UpdateDialog(QDialog):
         self.start_btn = QPushButton("开始更新")
         self.start_btn.clicked.connect(self.start_download)  # type: ignore
         self.start_btn.setMinimumWidth(80)
-        self.start_btn.setStyleSheet("""
-            QPushButton {
-                background-color: #4CAF50;
-                color: white;
-                border: none;
-                border-radius: 4px;
-                padding: 6px 12px;
-            }
-            QPushButton:hover {
-                background-color: #45a049;
-            }
-            QPushButton:pressed {
-                background-color: #3d8b40;
-            }
-            QPushButton:disabled {
-                background-color: #cccccc;
-            }
-        """)
+        self.start_btn.setStyleSheet(GREEN_BUTTON)
         btn_layout.addWidget(self.start_btn)
 
         layout.addLayout(btn_layout)

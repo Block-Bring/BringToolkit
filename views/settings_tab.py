@@ -1,6 +1,5 @@
-import webbrowser
-
-from PyQt6.QtCore import QTimer
+from PyQt6.QtCore import QTimer, QUrl
+from PyQt6.QtGui import QDesktopServices
 from PyQt6.QtWidgets import (
     QCheckBox,
     QGroupBox,
@@ -8,7 +7,6 @@ from PyQt6.QtWidgets import (
     QLabel,
     QPushButton,
     QVBoxLayout,
-    QWidget,
 )
 
 from core.app_info import APP_NAME, GITHUB_REPO, format_version_display
@@ -16,14 +14,14 @@ from core.check_update import CheckResult, check_for_updates
 from core.config import config, save_config
 from core.updater import UpdateDialog
 from utils.nana_tools import ask_yes_no, run_in_background, show_error, show_info
+from views.base_tab import BaseTab
 
 
-class SettingsTab(QWidget):
+class SettingsTab(BaseTab):
     def __init__(self):
         super().__init__()
-        main_layout = QVBoxLayout(self)
-        main_layout.setContentsMargins(20, 20, 20, 20)
-        main_layout.setSpacing(15)
+        self.main_layout.setContentsMargins(20, 20, 20, 20)
+        self.main_layout.setSpacing(15)
 
         group_update = QGroupBox("软件更新")
         update_layout = QVBoxLayout()
@@ -41,7 +39,7 @@ class SettingsTab(QWidget):
         self.check_update_cb.setChecked(config.get("settings.check_update", True))
         update_layout.addWidget(self.check_update_cb)
 
-        main_layout.addWidget(group_update)
+        self.main_layout.addWidget(group_update)
 
         group_insider = QGroupBox("体验计划")
         insider_layout = QVBoxLayout()
@@ -56,9 +54,9 @@ class SettingsTab(QWidget):
         insider_note.setWordWrap(True)
         insider_layout.addWidget(insider_note)
 
-        main_layout.addWidget(group_insider)
+        self.main_layout.addWidget(group_insider)
 
-        main_layout.addStretch()
+        self.main_layout.addStretch()
 
         btn_row = QHBoxLayout()
         btn_row.addStretch()
@@ -66,7 +64,7 @@ class SettingsTab(QWidget):
         self.save_btn.clicked.connect(self._on_save_settings)  # type: ignore[attr-defined]
         btn_row.addWidget(self.save_btn)
 
-        main_layout.addLayout(btn_row)
+        self.main_layout.addLayout(btn_row)
 
     def _on_save_settings(self):
         config.set("settings.check_update", self.check_update_cb.isChecked())
@@ -110,7 +108,7 @@ class SettingsTab(QWidget):
         if result.error:
             show_error("检查更新失败", f"检查更新时遇到错误：{result.error}")
             if result.format_mismatch or result.error_404:
-                webbrowser.open(f"{GITHUB_REPO}/releases")
+                QDesktopServices.openUrl(QUrl(f"{GITHUB_REPO}/releases"))
             return
 
         if result.has_update and result.latest_version and result.download_url:

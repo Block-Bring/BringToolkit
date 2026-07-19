@@ -1,31 +1,30 @@
 from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import QFrame, QHBoxLayout, QLabel, QPushButton, QVBoxLayout, QWidget
+from PyQt6.QtWidgets import QFrame, QHBoxLayout, QLabel, QPushButton, QVBoxLayout
+
+from utils.style import GREEN_BUTTON_ROUND
+from views.base_tab import BaseTab
 
 
-class FeaturesTab(QWidget):
+class FeaturesTab(BaseTab):
     def __init__(self):
         super().__init__()
-
-        main_layout = QVBoxLayout(self)
-        main_layout.setContentsMargins(20, 20, 20, 20)
-        main_layout.setSpacing(15)
 
         title_label = QLabel("🔧 功能列表")
         title_label.setStyleSheet("font-size: 22px; font-weight: bold;")
         title_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        main_layout.addWidget(title_label)
+        self.main_layout.addWidget(title_label)
 
         separator = QFrame()
         separator.setFrameShape(QFrame.Shape.HLine)
         separator.setStyleSheet("QFrame { max-height: 1px; }")
-        main_layout.addWidget(separator)
+        self.main_layout.addWidget(separator)
 
         self.functions_layout = QVBoxLayout()
         self.functions_layout.setSpacing(12)
         self._add_function_cards()
 
-        main_layout.addLayout(self.functions_layout)
-        main_layout.addStretch()
+        self.main_layout.addLayout(self.functions_layout)
+        self.main_layout.addStretch()
 
     def _add_function_cards(self):
         card = self._create_function_card(
@@ -81,23 +80,7 @@ class FeaturesTab(QWidget):
         action_button.setCursor(Qt.CursorShape.PointingHandCursor)
         action_button.setFixedHeight(36)
         action_button.setMinimumWidth(100)
-        action_button.setStyleSheet("""
-            QPushButton {
-                background-color: #4CAF50;
-                color: white;
-                border: none;
-                border-radius: 6px;
-                padding: 8px 18px;
-                font-size: 13px;
-                font-weight: bold;
-            }
-            QPushButton:hover {
-                background-color: #43A047;
-            }
-            QPushButton:pressed {
-                background-color: #388E3C;
-            }
-        """)
+        action_button.setStyleSheet(GREEN_BUTTON_ROUND)
         action_button.clicked.connect(on_click)
         card_layout.addWidget(action_button)
 
