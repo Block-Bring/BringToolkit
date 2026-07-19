@@ -1,4 +1,5 @@
 """测试 check_update 模块"""
+
 from core.check_update import CheckResult, _resolve_download_url
 
 
@@ -12,7 +13,9 @@ class TestCheckResult:
         assert result.is_stable is True
 
     def test_custom_values(self):
-        result = CheckResult(has_update=True, latest_version="2.0.0", download_url="https://example.com")
+        result = CheckResult(
+            has_update=True, latest_version="2.0.0", download_url="https://example.com"
+        )
         assert result.has_update is True
         assert result.latest_version == "2.0.0"
         assert result.download_url == "https://example.com"

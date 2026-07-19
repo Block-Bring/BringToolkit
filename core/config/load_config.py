@@ -2,8 +2,10 @@
 加载和管理全局配置
 提供一个全局配置对象，让整个软件都能访问配置
 """
+
 import json
 import os
+
 from core.app_info import CONFIG_PATH
 from utils.logger import logger
 
@@ -29,21 +31,17 @@ class ConfigManager:
         if not os.path.exists(config_path):
             # 如果配置文件不存在，先创建默认配置
             from core.config.create_config import create_default_config
+
             create_default_config(config_path)
 
         try:
-            with open(config_path, 'r', encoding='utf-8') as f:
+            with open(config_path, encoding="utf-8") as f:
                 self._config = json.load(f)
             logger.info(f"配置加载成功: {config_path}")  # type: ignore
         except Exception as e:
             logger.error(f"配置加载失败: {e}，使用默认配置")  # type: ignore
             # 使用默认配置
-            self._config = {
-                "settings": {
-                    "check_update": True,
-                    "insider_preview": False
-                }
-            }
+            self._config = {"settings": {"check_update": True, "insider_preview": False}}
 
     def get(self, key, default=None):
         """
@@ -56,7 +54,7 @@ class ConfigManager:
         返回:
             配置值
         """
-        keys = key.split('.')
+        keys = key.split(".")
         value = self._config
 
         for k in keys:
@@ -75,7 +73,7 @@ class ConfigManager:
             key: 配置键名，支持点号分隔的嵌套键，如 "settings.check_update"
             value: 配置值
         """
-        keys = key.split('.')
+        keys = key.split(".")
         config = self._config
 
         # 导航到倒数第二层
@@ -98,7 +96,7 @@ class ConfigManager:
             config_path = CONFIG_PATH
 
         try:
-            with open(config_path, 'w', encoding='utf-8') as f:
+            with open(config_path, "w", encoding="utf-8") as f:
                 json.dump(self._config, f, indent=4, ensure_ascii=False)
             logger.info(f"配置已保存: {config_path}")  # type: ignore
             return True

@@ -2,8 +2,10 @@
 创建默认配置文件
 如果 config.json 不存在，则创建一个包含默认值的配置文件
 """
+
 import json
 import os
+
 from core.app_info import CONFIG_PATH
 from utils.logger import logger
 
@@ -21,17 +23,12 @@ def create_default_config(config_path=None):
     if config_path is None:
         config_path = CONFIG_PATH
     # 定义默认配置
-    default_config = {
-        "settings": {
-            "check_update": True,
-            "insider_preview": False
-        }
-    }
+    default_config = {"settings": {"check_update": True, "insider_preview": False}}
 
     # 如果配置文件不存在，则创建
     if not os.path.exists(config_path):
         logger.info(f"配置文件不存在，正在创建: {config_path}")  # type: ignore
-        with open(config_path, 'w', encoding='utf-8') as f:
+        with open(config_path, "w", encoding="utf-8") as f:
             json.dump(default_config, f, indent=4, ensure_ascii=False)  # type: ignore[arg-type]
         logger.info("默认配置文件创建成功")  # type: ignore
     else:

@@ -3,8 +3,23 @@ name: CI
 on: [push, pull_request]
 
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: 安装依赖
+        run: pip install ruff mypy
+      - name: 代码风格检查
+        run: ruff check .
+      - name: 类型检查
+        run: mypy . --ignore-missing-imports --python-version 3.11 --explicit-package-bases
+
   test:
     runs-on: windows-latest
+    needs: lint
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5

@@ -1,7 +1,5 @@
-from PyQt6.QtWidgets import (
-    QWidget, QLabel, QVBoxLayout, QHBoxLayout, QPushButton, QFrame
-)
 from PyQt6.QtCore import Qt
+from PyQt6.QtWidgets import QFrame, QHBoxLayout, QLabel, QPushButton, QVBoxLayout, QWidget
 
 
 class FeaturesTab(QWidget):
@@ -35,7 +33,7 @@ class FeaturesTab(QWidget):
             title="Bring Craft 个性化数据迁移",
             description="将旧版本整合包的个性化配置、存档等数据迁移到新版本",
             button_text="开始迁移",
-            on_click=self._on_bring_craft_migrate
+            on_click=self._on_bring_craft_migrate,
         )
         self.functions_layout.addWidget(card)
 
@@ -107,5 +105,6 @@ class FeaturesTab(QWidget):
 
     def _on_bring_craft_migrate(self):
         from features.migrator.window import MigratorWindow
+
         dialog = MigratorWindow(self)
         dialog.exec()

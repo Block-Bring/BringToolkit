@@ -1,9 +1,9 @@
 """
-NanaTools - 纳西妲的贴心工具箱 🌿
-提供常用的 UI 对话框和后台任务执行工具。
+后台任务和 UI 对话框工具
 """
-from PyQt6.QtWidgets import QMessageBox
+
 from PyQt6.QtCore import QThread, pyqtSignal
+from PyQt6.QtWidgets import QMessageBox
 
 
 def run_in_background(task_func, on_finished=None, on_error=None):
@@ -18,6 +18,7 @@ def run_in_background(task_func, on_finished=None, on_error=None):
     返回:
         QThread 对象，调用 .start() 启动
     """
+
     class BackgroundWorker(QThread):
         finished_signal = pyqtSignal(object)
         error_signal = pyqtSignal(object)

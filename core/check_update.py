@@ -3,6 +3,7 @@
 从 GitHub 上的 latest/core/app_latest.json 获取最新版本信息，
 与本地 APP_VERSION 比较，判断是否需要更新。
 """
+
 from dataclasses import dataclass
 
 import requests
@@ -18,6 +19,7 @@ EXPECTED_FORMAT_VERSION = 4
 @dataclass
 class CheckResult:
     """更新检查结果"""
+
     has_update: bool = False
     latest_version: str | None = None
     download_url: str | None = None
@@ -62,8 +64,7 @@ def check_for_updates(insider_preview=False) -> CheckResult:
         if response.status_code == 404:
             logger.warning("未找到更新配置文件")
             return CheckResult(
-                error="未找到更新配置文件，请手动从 GitHub Releases 下载最新版本。",
-                error_404=True
+                error="未找到更新配置文件，请手动从 GitHub Releases 下载最新版本。", error_404=True
             )
 
         elif response.status_code != 200:
@@ -76,10 +77,15 @@ def check_for_updates(insider_preview=False) -> CheckResult:
         # 检查 format_version
         format_version = data.get("format_version", 1)
         if format_version != EXPECTED_FORMAT_VERSION:
-            logger.warning(f"格式版本不匹配：本地支持 {EXPECTED_FORMAT_VERSION}，线上为 {format_version}")
+            logger.warning(
+                f"格式版本不匹配：本地支持 {EXPECTED_FORMAT_VERSION}，线上为 {format_version}"
+            )
             return CheckResult(
                 format_mismatch=True,
-                error=f"远程更新配置文件格式版本与本地不兼容，请尝试手动更新。\n（本地: {EXPECTED_FORMAT_VERSION}, 线上: {format_version}）"
+                error=(
+                    "远程更新配置文件格式版本与本地不兼容，请尝试手动更新。\n"
+                    f"（本地: {EXPECTED_FORMAT_VERSION}, 线上: {format_version}）"
+                ),
             )
 
         # 根据是否检查预览版，选择不同的分支

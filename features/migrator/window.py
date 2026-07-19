@@ -2,12 +2,19 @@
 Minecraft 数据迁移窗口
 用于选择源目录和目标实例，执行数据迁移
 """
-from PyQt6.QtWidgets import (
-    QDialog, QVBoxLayout, QHBoxLayout, QLabel,
-    QPushButton, QLineEdit, QFileDialog, QComboBox,
-    QGroupBox
-)
+
 from PyQt6.QtCore import Qt
+from PyQt6.QtWidgets import (
+    QComboBox,
+    QDialog,
+    QFileDialog,
+    QGroupBox,
+    QHBoxLayout,
+    QLabel,
+    QLineEdit,
+    QPushButton,
+    QVBoxLayout,
+)
 
 from utils.logger import logger
 from utils.nana_tools import ask_yes_no, show_info, show_warning
@@ -146,7 +153,7 @@ class MigratorWindow(QDialog):
             self,
             "选择 .minecraft 目录",
             "",
-            QFileDialog.Option.ShowDirsOnly | QFileDialog.Option.DontResolveSymlinks
+            QFileDialog.Option.ShowDirsOnly | QFileDialog.Option.DontResolveSymlinks,
         )
 
         if directory:
@@ -165,7 +172,7 @@ class MigratorWindow(QDialog):
             "BringCraft-Latest",
             "BringCraft-1.20.1",
             "BringCraft-1.19.2",
-            "Default-Minecraft"
+            "Default-Minecraft",
         ]
 
         for instance in instances:
@@ -200,7 +207,7 @@ class MigratorWindow(QDialog):
             f"源目录: {source_dir}\n"
             f"源实例: {source_instance}\n"
             f"目标实例: {target_instance}",
-            default=False  # 默认选"否"，更安全
+            default=False,  # 默认选"否"，更安全
         )
 
         if reply:
@@ -215,5 +222,5 @@ class MigratorWindow(QDialog):
                 "• 资源包\n"
                 "• 光影配置\n"
                 "• 截图\n"
-                "• 模组配置"
+                "• 模组配置",
             )

@@ -1,4 +1,5 @@
 """测试 app_info 模块"""
+
 from core.app_info import format_version_display
 
 
